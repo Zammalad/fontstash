@@ -153,7 +153,7 @@ typedef struct FONSttFontImpl FONSttFontImpl;
 
 static FT_Library ftLibrary;
 
-int fons__tt_init()
+int fons__tt_init(FONScontext *context)
 {
 	FT_Error ftError;
 	ftError = FT_Init_FreeType(&ftLibrary);
@@ -855,8 +855,14 @@ int fonsAddFont(FONScontext* stash, const char* name, const char* path)
 	unsigned char* data = NULL;
 
 	// Read in the font data.
+#ifdef _MSC_VER
+	errno_t err;
+	if ((err = fopen_s(&fp, path, "r" )) != 0) goto error;
+#else
 	fp = fopen(path, "rb");
 	if (fp == NULL) goto error;
+#endif
+
 	fseek(fp,0,SEEK_END);
 	dataSize = (int)ftell(fp);
 	fseek(fp,0,SEEK_SET);
@@ -885,8 +891,12 @@ int fonsAddFontMem(FONScontext* stash, const char* name, unsigned char* data, in
 
 	font = stash->fonts[idx];
 
+#ifdef _MSC_VER
+	strncpy_s(font->name, _countof(font->name), name, _TRUNCATE);
+#else
 	strncpy(font->name, name, sizeof(font->name));
 	font->name[sizeof(font->name)-1] = '\0';
+#endif
 
 	// Init hash lookup.
 	for (i = 0; i < FONS_HASH_LUT_SIZE; ++i)
@@ -1121,7 +1131,7 @@ static void fons__getQuad(FONScontext* stash, FONSfont* font,
 
 	// Each glyph has 2px border to allow good interpolation,
 	// one pixel to prevent leaking, and one to allow good interpolation for rendering.
-	// Inset the texture region by one pixel for corret interpolation.
+	// Inset the texture region by one pixel for correct interpolation.
 	xoff = (short)(glyph->xoff+1);
 	yoff = (short)(glyph->yoff+1);
 	x0 = (float)(glyph->x0+1);
