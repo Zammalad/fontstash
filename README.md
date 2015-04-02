@@ -3,7 +3,7 @@ Font Stash
 
 Font stash is light-weight online font texture atlas builder written in C. It uses [stb_truetype](http://nothings.org) to render fonts on demand to a texture atlas.
 
-The code is split in two parts, the font atlas and glyph quad generator [fontstash.h](/src/fontstash.h), and an example OpenGL backend ([glfontstash.h](/src/glfontstash.h).
+The code is split in two parts, the font atlas and glyph quad generator [fontstash.h](/src/fontstash.h), and an example OpenGL backend [glfontstash.h](/src/glfontstash.h).
 
 ## Screenshot
 
